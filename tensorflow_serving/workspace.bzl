@@ -121,13 +121,10 @@ def tf_serving_workspace():
         urls = ["https://github.com/google/yggdrasil-decision-forests/archive/refs/tags/1.4.0.zip"],
     )
 
-    # The Boost repo is organized into git sub-modules (see the list at
-    # https://github.com/boostorg/boost/tree/master/libs), which requires "new_git_repository".
-    new_git_repository(
+    http_archive(
         name = "org_boost",
-        commit = "b7b1371294b4bdfc8d85e49236ebced114bc1d8f",  # boost-1.75.0
+        sha256 = "caf36d7c13b3d8ce62282a64a695113945a13b0f1796a45160726d04295f95ed",
+        strip_prefix = "boost_1_75_0",
+        urls = ["https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.zip"],
         build_file = "//third_party/boost:BUILD",
-        init_submodules = True,
-        recursive_init_submodules = True,
-        remote = "https://github.com/boostorg/boost",
     )
