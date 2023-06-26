@@ -28,3 +28,10 @@
     * The servable is identified by the name property given in the ``SetAspiredVersions`` function call
     * A call to ``GetServableHandel`` from the manager will search for a loaded servable with the given ID and fill it into the empty handle
     * The ``ServableHandle`` can be used as a smart pointer to the underlying servable (C++ class)
+
+
+# Servers
+
+* Server Core wraps an AspiredVersionsManager and provides a function GetServableHandle which forwards the request directly to the AspiredVersionsManager
+* The HTTP server however uses this function with a handle to a ``SavedModelBundle`` *hardcoded* so it is unusable for our purpose (see tensorflow_serving/model_servers/http_rest_api_handler.cc line 233)
+* One needs to rewrite at least parts of the HTTP server to request a ``ServableHandle`` with the custom type.

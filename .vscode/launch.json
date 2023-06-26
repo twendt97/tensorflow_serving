@@ -4,7 +4,8 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bazel-bin/my_servable/my_server",
+            // "program": "${workspaceFolder}/bazel-bin/my_servable/hashmap_server_example",
+            "program": "${workspaceFolder}/bazel-bin/my_servable/hashmap_manager_example",
             // "args": [
             //     "--tb-to-dut",
             //     "/tmp/test_tb_to_dut",

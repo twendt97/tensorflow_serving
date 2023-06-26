@@ -15,8 +15,8 @@ limitations under the License.
 
 #include "tensorflow_serving/servables/hashmap/hashmap_source_adapter.h"
 
-#include <stddef.h>
 #include <memory>
+#include <stddef.h>
 #include <vector>
 
 #include "tensorflow/core/lib/core/errors.h"
@@ -25,6 +25,7 @@ limitations under the License.
 #include "tensorflow/core/lib/strings/str_util.h"
 #include "tensorflow/core/platform/env.h"
 #include "tensorflow/core/platform/types.h"
+#include "tensorflow_serving/util/class_registration.h"
 
 namespace tensorflow {
 namespace serving {
@@ -33,48 +34,56 @@ namespace {
 using Hashmap = std::unordered_map<string, string>;
 
 // Populates a hashmap from a file located at 'path', in format 'format'.
-Status LoadHashmapFromFile(const string& path,
-                           const HashmapSourceAdapterConfig::Format& format,
-                           std::unique_ptr<Hashmap>* hashmap) {
+Status LoadHashmapFromFile(const string &path,
+                           const HashmapSourceAdapterConfig::Format &format,
+                           std::unique_ptr<Hashmap> *hashmap) {
   hashmap->reset(new Hashmap);
   switch (format) {
-    case HashmapSourceAdapterConfig::SIMPLE_CSV: {
-      std::unique_ptr<RandomAccessFile> file;
-      TF_RETURN_IF_ERROR(Env::Default()->NewRandomAccessFile(path, &file));
-      const size_t kBufferSizeBytes = 262144;
-      io::InputBuffer in(file.get(), kBufferSizeBytes);
-      string line;
-      while (in.ReadLine(&line).ok()) {
-        std::vector<string> cols = str_util::Split(line, ',');
-        if (cols.size() != 2) {
-          return errors::InvalidArgument("Unexpected format.");
-        }
-        const string& key = cols[0];
-        const string& value = cols[1];
-        (*hashmap)->insert({key, value});
+  case HashmapSourceAdapterConfig::SIMPLE_CSV: {
+    std::unique_ptr<RandomAccessFile> file;
+    string myPath = path + "/test_map.csv";
+    TF_RETURN_IF_ERROR(Env::Default()->NewRandomAccessFile(myPath, &file));
+    const size_t kBufferSizeBytes = 262144;
+    io::InputBuffer in(file.get(), kBufferSizeBytes);
+    string line;
+    while (in.ReadLine(&line).ok()) {
+      std::vector<string> cols = str_util::Split(line, ',');
+      if (cols.size() != 2) {
+        return errors::InvalidArgument("Unexpected format.");
       }
-      break;
+      const string &key = cols[0];
+      const string &value = cols[1];
+      (*hashmap)->insert({key, value});
     }
-    default:
-      return errors::InvalidArgument("Unrecognized format enum value: ",
-                                     format);
+    break;
+  }
+  default:
+    return errors::InvalidArgument("Unrecognized format enum value: ", format);
   }
   return Status();
 }
 
-}  // namespace
+} // namespace
 
 HashmapSourceAdapter::HashmapSourceAdapter(
-    const HashmapSourceAdapterConfig& config)
+    const HashmapSourceAdapterConfig &config)
     : SimpleLoaderSourceAdapter<StoragePath, Hashmap>(
-          [config](const StoragePath& path, std::unique_ptr<Hashmap>* hashmap) {
+          [config](const StoragePath &path, std::unique_ptr<Hashmap> *hashmap) {
             return LoadHashmapFromFile(path, config.format(), hashmap);
           },
           // Decline to supply a resource footprint estimate.
           SimpleLoaderSourceAdapter<StoragePath,
                                     Hashmap>::EstimateNoResources()) {}
 
-HashmapSourceAdapter::~HashmapSourceAdapter() { Detach(); }
+tensorflow::Status HashmapSourceAdapter::Create(const HashmapSourceAdapterConfig &config,
+                          std::unique_ptr<StoragePathSourceAdapter> *result) {
+  HashmapSourceAdapter *raw_result = new HashmapSourceAdapter(config);
+  result->reset(raw_result);
+  return tensorflow::Status();
+}
 
-}  // namespace serving
-}  // namespace tensorflow
+HashmapSourceAdapter::~HashmapSourceAdapter() { Detach(); }
+REGISTER_STORAGE_PATH_SOURCE_ADAPTER(HashmapSourceAdapter, HashmapSourceAdapterConfig);
+
+} // namespace serving
+} // namespace tensorflow

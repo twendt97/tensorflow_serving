@@ -33,7 +33,7 @@ int main(void) {
   // This triggers the AspiredVersionsCallback
   hashmap_adapter->SetAspiredVersions(
       "default", {serving::ServableData<serving::StoragePath>(
-                     {"default", 1}, "./test_map/1/test_map.csv")});
+                     {"default", 1}, "./test_map/1")});
 
   // std::unique_ptr<serving::FileSystemStoragePathSource> path_source;
   // serving::FileSystemStoragePathSourceConfig config;

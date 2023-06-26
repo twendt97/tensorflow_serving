@@ -14,3 +14,19 @@ cc_binary(
         '-g3',
     ]
 )
+
+# https://docs.bazel.build/versions/master/be/c-cpp.html#cc_binary
+cc_binary(
+    name = "hashmap_server_example",
+    srcs = ["hashmap_server_example.cc"],
+    copts = [
+        '-O0',
+        '-g3',
+    ],
+    deps = [
+        "//tensorflow_serving/model_servers:server_core",
+        "//tensorflow_serving/servables/hashmap:hashmap_source_adapter",
+        "//tensorflow_serving/core:availability_preserving_policy",
+        "//tensorflow_serving/model_servers:http_server",
+    ],
+)

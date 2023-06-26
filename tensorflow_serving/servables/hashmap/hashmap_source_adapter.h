@@ -33,15 +33,18 @@ namespace serving {
 class HashmapSourceAdapter final
     : public SimpleLoaderSourceAdapter<StoragePath,
                                        std::unordered_map<string, string>> {
- public:
-  explicit HashmapSourceAdapter(const HashmapSourceAdapterConfig& config);
+public:
+  explicit HashmapSourceAdapter(const HashmapSourceAdapterConfig &config);
   ~HashmapSourceAdapter() override;
 
- private:
+  static tensorflow::Status Create(const HashmapSourceAdapterConfig &config,
+                            std::unique_ptr<StoragePathSourceAdapter> *result);
+
+private:
   TF_DISALLOW_COPY_AND_ASSIGN(HashmapSourceAdapter);
 };
 
-}  // namespace serving
-}  // namespace tensorflow
+} // namespace serving
+} // namespace tensorflow
 
-#endif  // TENSORFLOW_SERVING_SERVABLES_HASHMAP_HASHMAP_SOURCE_ADAPTER_H_
+#endif // TENSORFLOW_SERVING_SERVABLES_HASHMAP_HASHMAP_SOURCE_ADAPTER_H_
