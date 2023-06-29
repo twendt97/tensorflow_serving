@@ -1,3 +1,11 @@
+# Examples
+
+* This repository contains an example on how to use the classes ``AspiredVersionsManager`` and ``ServerCore``
+* To build the examples follow these steps:
+    * Clone the repository in a directory called ``serving``
+    * Open the repository in the provided Dev Container
+    * Use the ``Makefile`` targets provided to build the ``tensorflow_model_server`` and the examples for custom ``servables``
+
 # General Concepts
 
 * TF serving is a software designed to manage the lifecycle of (AI) models and to provide access to this resource

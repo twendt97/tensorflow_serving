@@ -19,9 +19,24 @@ int main(void) {
   auto *model_config =
       model_server_config.mutable_model_config_list()->add_config();
   model_config->set_name("hashmap");
-  //   model_config->set_base_path("/home/thilo/serving/test_map");
+  // This uses the default loader which searches a filesystem directory with the
+  // structure <base_path>/<version_number>/<files>
+
+  // There must be some kind of convention for file names which are then loaded
+  // by the custom source adapter
   model_config->set_base_path("/workspaces/serving/test_map");
   model_config->set_model_platform("hashmap");
+
+  // Alternatively, one can supply a custom model loader together with an Any
+  // proto buffer to load the model in any other way (other structure, RPC call
+  // whatever)
+
+  // options.custom_model_config_loader = ...;
+  // auto *custom_model_config =
+  // model_server_config.mutable_custom_model_config();
+  // custom_model_config->mutable_type_url()->assign(
+  //     "type.googleapis.com/_packagename_._messagename_");
+  // custom_model_config->mutable_value()->assign(...);
   options.model_server_config = model_server_config;
 
   ::google::protobuf::Any source_adapter_config;

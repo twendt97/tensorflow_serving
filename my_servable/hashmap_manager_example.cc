@@ -2,17 +2,19 @@
 #include <memory>
 #include <unordered_map>
 
-// #include "tensorflow_serving/config/file_system_storage_path_source.pb.h"
 #include "tensorflow_serving/core/aspired_versions_manager.h"
 #include "tensorflow_serving/core/availability_preserving_policy.h"
 #include "tensorflow_serving/core/manager.h"
 #include "tensorflow_serving/servables/hashmap/hashmap_source_adapter.h"
-// #include "tensorflow_serving/sources/storage_path/file_system_storage_path_source.h"
 
 int main(void) {
   using namespace tensorflow;
   std::unique_ptr<serving::AspiredVersionsManager> manager;
   serving::AspiredVersionsManager::Options manager_options;
+
+  // AvailabilityPreservingPolicy means that a new version is loaded before the
+  // old version is unloaded instead of unloading the old version as a first
+  // step. Like this there is always a version available
   manager_options.aspired_version_policy =
       std::unique_ptr<serving::AspiredVersionPolicy>(
           new serving::AvailabilityPreservingPolicy);
@@ -32,8 +34,8 @@ int main(void) {
 
   // This triggers the AspiredVersionsCallback
   hashmap_adapter->SetAspiredVersions(
-      "default", {serving::ServableData<serving::StoragePath>(
-                     {"default", 1}, "./test_map/1")});
+      "default", {serving::ServableData<serving::StoragePath>({"default", 1},
+                                                              "./test_map/1")});
 
   // std::unique_ptr<serving::FileSystemStoragePathSource> path_source;
   // serving::FileSystemStoragePathSourceConfig config;
